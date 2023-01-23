@@ -42,7 +42,15 @@ function App() {
 	}, []);
 
 	if (isLoading) {
-		return <p>Cargando...</p>;
+		return (
+			<div className="container">
+				<div className="row">
+					<div className="col-12 text-center">
+						<p>CARGANDO....</p>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	if (isError) {
