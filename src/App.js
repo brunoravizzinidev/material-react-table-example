@@ -34,7 +34,7 @@ function App() {
 
 			try {
 				const response = await axios.get(
-					`https://api.instantwebtools.net/v1/passenger?page=0&size=${pagination.pageSize}`
+					`https://api.instantwebtools.net/v1/passenger?page=${pagination.pageIndex}&size=${pagination.pageSize}`
 				);
 				const data = response.data;
 				setData(data.data);
