@@ -1,6 +1,8 @@
 import './App.css';
 import { Button, Slider } from '@mui/material';
 import MaterialReactTable from 'material-react-table';
+//Import Material React Table Translations
+import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
@@ -59,6 +61,7 @@ function App() {
 			{
 				accessorKey: 'trips',
 				header: 'Viajes',
+				enableColumnFilter: false,
 			},
 			{
 				accessorKey: '_id',
@@ -95,6 +98,7 @@ function App() {
 	console.log('--->La Data:', data);
 	console.log('--->La Paginación:', pagination);
 	console.log('--->El sort:', sorting);
+	console.log('--->Filtro de Columna:', columnFilters);
 
 	return (
 		<div className="container">
@@ -103,10 +107,24 @@ function App() {
 					<MaterialReactTable
 						columns={columns}
 						data={data}
-						initialState={{ showColumnFilters: true }}
+						initialState={{
+							showColumnFilters: true,
+							// col oculta al inicio, por id
+							columnVisibility: { _id: false },
+						}}
+						// filtrar col server side
 						manualFiltering
+						// paginar server side
 						manualPagination
+						// hacer sort server side
 						manualSorting
+						// permitir fijar cols
+						enablePinning
+						// no poder cambiar padding filas
+						enableDensityToggle={false}
+						// no permite búsqueda global
+						enableGlobalFilter={false}
+						localization={MRT_Localization_ES}
 						muiToolbarAlertBannerProps={
 							isError
 								? {
