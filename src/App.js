@@ -194,6 +194,17 @@ function App() {
 								</Button>
 							</Box>
 						)}
+						// estilo a cabecera
+						muiTableHeadCellProps={{
+							//no useTheme hook needed, just use the `sx` prop with the theme callback
+							sx: (theme) => ({
+								color: 'tomato',
+								backgroundColor: 'yellow',
+								'&: nth-last-child(-n+1)': {
+									backgroundColor: 'red',
+								},
+							}),
+						}}
 						// filtrar col server side
 						manualFiltering
 						// paginar server side
@@ -206,6 +217,8 @@ function App() {
 						enableDensityToggle={false}
 						// no permite búsqueda global
 						enableGlobalFilter={false}
+						// no permite filtrar
+						enableColumnFilters={false}
 						localization={MRT_Localization_ES}
 						muiToolbarAlertBannerProps={
 							isError
