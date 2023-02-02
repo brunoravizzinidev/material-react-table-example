@@ -1,10 +1,13 @@
-import './App.css';
-import { Button, Slider } from '@mui/material';
-import MaterialReactTable from 'material-react-table';
-//Import Material React Table Translations
-import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { Box, Button, Slider } from '@mui/material';
+import * as XLSX from 'xlsx';
+import _ from 'lodash';
+import MaterialReactTable from 'material-react-table';
+//Import Material React Table Translations
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { MRT_Localization_ES } from 'material-react-table/locales/es';
+import './App.css';
 
 function App() {
 	const [data, setData] = useState([]);
@@ -100,6 +103,47 @@ function App() {
 	console.log('--->El sort:', sorting);
 	console.log('--->Filtro de Columna:', columnFilters);
 
+	function downloadXLS(array, cols, moduleName) {
+		console.log(array, '-array---', cols);
+
+		let exportCols = cols.map((col) => {
+			return col.accessorKey;
+		});
+
+		let newArray = array.map((item) => _.pick(item, exportCols));
+
+		console.log('----->', newArray, '----newArray');
+
+		// headers
+		let exportColsHeaders = cols.map((col) => {
+			return col.header;
+		});
+
+		// let newHeaders = exportColsHeaders.join(columnDelimiter);
+
+		let newHeadersArray = [exportColsHeaders];
+
+		const ws = XLSX.utils.json_to_sheet(newArray, {
+			origin: 'A2',
+			skipHeader: true,
+		});
+		const wb = XLSX.utils.book_new();
+
+		XLSX.utils.sheet_add_aoa(ws, newHeadersArray, { origin: 'A1' });
+
+		XLSX.utils.book_append_sheet(wb, ws, moduleName);
+		XLSX.writeFile(wb, 'reports.xlsx');
+	}
+
+	const handleExportRows = (rows, cols, moduleName) => {
+		console.log(rows, 'z------');
+		downloadXLS(
+			rows.map((row) => row.original),
+			cols,
+			moduleName
+		);
+	};
+
 	return (
 		<div className="container">
 			<div className="row">
@@ -112,6 +156,44 @@ function App() {
 							// col oculta al inicio, por id
 							columnVisibility: { _id: false },
 						}}
+						// cabecera de botones
+						renderTopToolbarCustomActions={({ table }) => (
+							<Box
+								sx={{
+									display: 'flex',
+									gap: '1rem',
+									p: '0.5rem',
+									flexWrap: 'wrap',
+								}}
+							>
+								<Button
+									color="primary"
+									//export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+									onClick={() =>
+										downloadXLS(data, columns, 'data')
+									}
+									startIcon={<FileDownloadIcon />}
+									variant="contained"
+								>
+									Exportar a Excel
+								</Button>
+								<Button
+									color="primary"
+									//export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+									onClick={() =>
+										handleExportRows(
+											table.getRowModel().rows,
+											columns,
+											'data2'
+										)
+									}
+									startIcon={<FileDownloadIcon />}
+									variant="contained"
+								>
+									Exportar Filas
+								</Button>
+							</Box>
+						)}
 						// filtrar col server side
 						manualFiltering
 						// paginar server side
